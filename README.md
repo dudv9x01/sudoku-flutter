@@ -88,9 +88,6 @@ $> flutter build iOS
 $> flutter build apk
 ```
 
-## more flutter features
-see the [Flutter](https://flutter.dev/) official website
-
 ## the end
 
 thanks for visit this repository , wish you can like it and star it :kissing_heart:
