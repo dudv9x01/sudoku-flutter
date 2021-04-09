@@ -37,17 +37,19 @@ class _SudokuGamePageState extends State<SudokuGamePage>
         onDoubleTap: () {
           return showDialog(
               context: context,
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Image(image: AssetImage("assets/image/about_me.jpg")),
-                    CupertinoButton(
-                      child: Text("死月半子"),
-                      onPressed: () {
-                        Navigator.pop(context, false);
-                      },
-                    )
-                  ]));
+              builder: (BuildContext context) {
+                return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Image(image: AssetImage("assets/image/about_me.jpg")),
+                      CupertinoButton(
+                        child: Text("死月半子"),
+                        onPressed: () {
+                          Navigator.pop(context, false);
+                        },
+                      )
+                    ]);
+              });
         });
     return showAboutDialog(
         applicationIcon: appIcon,

@@ -176,7 +176,7 @@ Widget _newGameButton(BuildContext context) {
 
             showCupertinoModalBottomSheet(
               context: context,
-              builder: (context, scrollController) {
+              builder: (context) {
                 return SafeArea(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
