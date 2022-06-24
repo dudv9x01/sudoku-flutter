@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:sudoku/state/sudoku_state.dart';
 
 class SudokuPauseCoverPage extends StatefulWidget {
-  SudokuPauseCoverPage({Key key}) : super(key: key);
+  SudokuPauseCoverPage({Key? key}) : super(key: key);
 
   @override
   _SudokuPauseCoverPageState createState() => _SudokuPauseCoverPageState();

@@ -1,4 +1,3 @@
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -13,18 +12,18 @@ part 'sudoku_state.g.dart';
 final Logger log = Logger();
 
 const LEVEL_NAMES = {
-  LEVEL.EASY: "简单",
-  LEVEL.MEDIUM: "中等",
-  LEVEL.HARD: "困难",
-  LEVEL.EXPERT: "专家"
+  LEVEL.EASY: "Simple",
+  LEVEL.MEDIUM: "medium",
+  LEVEL.HARD: "difficulty",
+  LEVEL.EXPERT: "expert"
 };
 
 const STATUS_NAMES = {
-  SudokuGameStatus.initialize: "初始化",
-  SudokuGameStatus.gaming: "进行中",
-  SudokuGameStatus.pause: "暂停",
-  SudokuGameStatus.fail: "失败",
-  SudokuGameStatus.success: "胜利"
+  SudokuGameStatus.initialize: "sự khởi tạo",
+  SudokuGameStatus.gaming: "processing",
+  SudokuGameStatus.pause: "pause",
+  SudokuGameStatus.fail: "fail",
+  SudokuGameStatus.success: "success"
 };
 
 @HiveType(typeId: 6)
@@ -48,35 +47,35 @@ enum SudokuGameStatus {
 @HiveType(typeId: 5)
 class SudokuState extends Model {
   @HiveField(0)
-  SudokuGameStatus status;
+  SudokuGameStatus? status;
 
   // 数独
   @HiveField(1)
-  Sudoku sudoku;
+  Sudoku? sudoku;
 
   // 难度等级
   @HiveField(2)
-  LEVEL level;
+  LEVEL? level;
 
   // 耗时
   @HiveField(3)
-  int timing;
+  int? timing;
 
   // 可用生命
   @HiveField(4)
-  int life;
+  int? life;
 
   // 可用提示
   @HiveField(5)
-  int hint;
+  int? hint;
 
   // sudoku 填写记录
   @HiveField(6)
-  List<int> record;
+  List<int>? record;
 
   // 笔记
   @HiveField(7)
-  List<List<bool>> mark;
+  List<List<bool>?>? mark;
 
   // 是否完成
   bool get isComplete {
@@ -86,9 +85,9 @@ class SudokuState extends Model {
 
     int value ;
     for(int i =0 ;i<81;++i){
-      value = sudoku.puzzle[i];
+      value = sudoku!.puzzle[i];
       if(value == -1){
-        value = record[i];
+        value = record![i];
       }
       if(value == -1){
         return false;
@@ -98,18 +97,18 @@ class SudokuState extends Model {
     return true;
   }
 
-  SudokuState({LEVEL level, Sudoku sudoku}) {
-    log.w("SudokuState 初始化了 ???");
+  SudokuState({LEVEL? level, Sudoku? sudoku}) {
+    log.w("SudokuState initialized ???");
     log.w("level : $level");
     initialize(level: level, sudoku: sudoku);
   }
 
-  static SudokuState newSudokuState({LEVEL level, Sudoku sudoku}) {
+  static SudokuState newSudokuState({LEVEL? level, Sudoku? sudoku}) {
     SudokuState state = new SudokuState(level: level, sudoku: sudoku);
     return state;
   }
 
-  void initialize({LEVEL level, Sudoku sudoku}) {
+  void initialize({LEVEL? level, Sudoku? sudoku}) {
     status = SudokuGameStatus.initialize;
     this.sudoku = sudoku;
     this.level = level;
@@ -126,21 +125,21 @@ class SudokuState extends Model {
     notifyListeners();
   }
 
-  String get timer => sprintf("%02i:%02i", [timing ~/ 60, timing % 60]);
+  String get timer => sprintf("%02i:%02i", [timing! ~/ 60, timing! % 60]);
 
   void lifeLoss() {
-    if (this.life > 0) {
-      this.life--;
+    if (this.life! > 0) {
+      this.life = this.life! - 1;
     }
-    if (this.life <= 0) {
+    if (this.life! <= 0) {
       this.status = SudokuGameStatus.fail;
     }
     notifyListeners();
   }
 
   void hintLoss() {
-    if (this.hint ?? 0 > 0) {
-      this.hint--;
+    if ((this.hint ?? 0) > 0) {
+      this.hint = this.hint! - 1;
     }
     notifyListeners();
   }
@@ -153,16 +152,16 @@ class SudokuState extends Model {
     if (this.status == SudokuGameStatus.initialize) {
       throw new ArgumentError("can't update record in \"initialize\" status");
     }
-    List<int> puzzle = this.sudoku.puzzle;
+    List<int> puzzle = this.sudoku!.puzzle;
 
     // 清空笔记
     cleanMark(index);
 
     if (puzzle[index] != -1) {
-      this.record[index] = -1;
+      this.record![index] = -1;
       return;
     }
-    this.record[index] = num;
+    this.record![index] = num;
 
     /// 更新填写记录,笔记清除
     /// 清空当前index笔记
@@ -190,9 +189,9 @@ class SudokuState extends Model {
     if (this.status == SudokuGameStatus.initialize) {
       throw new ArgumentError("can't update record in \"initialize\" status");
     }
-    List<int> puzzle = this.sudoku.puzzle;
+    List<int> puzzle = this.sudoku!.puzzle;
     if (puzzle[index] == -1) {
-      this.record[index] = -1;
+      this.record![index] = -1;
     }
     notifyListeners();
   }
@@ -205,17 +204,17 @@ class SudokuState extends Model {
     if (this.status == SudokuGameStatus.initialize) {
       throw new ArgumentError("can't update record in \"initialize\" status");
     }
-    if(sudoku.puzzle[index] != -1){
+    if(sudoku!.puzzle[index] != -1){
       return ;
     }
-    if(record[index] == num){
+    if(record![index] == num){
       cleanRecord(index);
     }else{
       setRecord(index, num);
     }
   }
 
-  void setMark(int index, int num) {
+  void setMark(int index, int? num) {
     if (index < 0 || index > 80) {
       throw new ArgumentError(
           'index border [0,80], input index:$index out of the border');
@@ -226,26 +225,26 @@ class SudokuState extends Model {
     // 清空数字
     cleanRecord(index);
 
-    if (sudoku.puzzle[index] != -1) {
-      this.mark[index] = null;
+    if (sudoku!.puzzle[index] != -1) {
+      this.mark![index] = null;
       return;
     }
 
-    List<bool> markPoint = this.mark[index];
+    List<bool>? markPoint = this.mark?[index];
     if (markPoint == null) {
       markPoint = List.generate(10, (index) => false);
     }
     markPoint[num] = true;
-    this.mark[index] = markPoint;
+    this.mark![index] = markPoint;
     notifyListeners();
   }
 
-  void cleanMark(int index, {int num}) {
+  void cleanMark(int index, {int? num}) {
     if (index < 0 || index > 80) {
       throw new ArgumentError(
           'index border [0,80], input index:$index out of the border');
     }
-    List<bool> markPoint = this.mark[index];
+    List<bool>? markPoint = this.mark?[index];
     if (markPoint != null) {
       if (num != null && num > 0 && num < 10) {
         markPoint[num] = false;
@@ -256,12 +255,12 @@ class SudokuState extends Model {
         markPoint = null;
       }
 
-      this.mark[index] = markPoint;
+      this.mark?[index] = markPoint;
     }
     notifyListeners();
   }
 
-  void switchMark(int index, int num) {
+  void switchMark(int index, int? num) {
     if (index < 0 || index > 80) {
       throw new ArgumentError(
           'index border [0,80], input index:$index out of the border');
@@ -270,7 +269,7 @@ class SudokuState extends Model {
       throw new ArgumentError("num must be [1,9]");
     }
 
-    List<bool> markPoint = this.mark[index];
+    List<bool>? markPoint = this.mark?[index];
     if(markPoint == null ){
       markPoint = List.generate(10, (index) => false);
     }
@@ -301,8 +300,8 @@ class SudokuState extends Model {
     if(sudoku == null){
       return false;
     }
-    int puzzleLength = sudoku.puzzle.where((element) => element == num).length;
-    int recordLength = record.where((element) => element == num).length;
+    int puzzleLength = sudoku!.puzzle.where((element) => element == num).length;
+    int recordLength = record!.where((element) => element == num).length;
     return 9 > (puzzleLength + recordLength);
   }
 
@@ -325,7 +324,7 @@ class SudokuState extends Model {
     await _initHive();
 
     SudokuState state;
-    Box sudokuStore;
+    late Box sudokuStore;
 
     try {
       sudokuStore = await Hive.openBox(HIVE_BOX_NAME);

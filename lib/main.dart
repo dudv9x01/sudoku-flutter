@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -38,7 +37,7 @@ class MyApp extends StatelessWidget {
                       textDirection: TextDirection.ltr)));
         }
 
-        SudokuState sudokuState = snapshot.data;
+        SudokuState sudokuState = snapshot.data!;
         BootstrapPage bootstrapPage = BootstrapPage();
         SudokuGamePage sudokuGamePage = SudokuGamePage(title: "Sudoku");
 

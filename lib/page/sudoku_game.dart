@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:logger/logger.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:sudoku/page/sudoku_pause_cover.dart';
@@ -13,7 +11,7 @@ import 'package:sudoku_dart/sudoku_dart.dart';
 final Logger log = Logger();
 
 class SudokuGamePage extends StatefulWidget {
-  SudokuGamePage({Key key, this.title}) : super(key: key);
+  SudokuGamePage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
@@ -28,34 +26,36 @@ class _SudokuGamePageState extends State<SudokuGamePage>
 
   SudokuState get _state => ScopedModel.of<SudokuState>(context);
 
+  Future onDoubleTap() {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Image(image: AssetImage("assets/image/about_me.jpg")),
+                CupertinoButton(
+                  child: Text("half dead moon"),
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                )
+              ]);
+        });
+  }
+
   void _aboutDialogAction(BuildContext context) {
     Widget appIcon = GestureDetector(
         child: Image(
             image: AssetImage("assets/image/about_me.jpg"),
             width: 30,
             height: 30),
-        onDoubleTap: () {
-          return showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Image(image: AssetImage("assets/image/about_me.jpg")),
-                      CupertinoButton(
-                        child: Text("死月半子"),
-                        onPressed: () {
-                          Navigator.pop(context, false);
-                        },
-                      )
-                    ]);
-              });
-        });
+        onDoubleTap: () => onDoubleTap());
     return showAboutDialog(
         applicationIcon: appIcon,
         context: context,
         children: <Widget>[
-          Text("咦? 你来看我啦!!"),
+          Text("Huh? You came to see me!!"),
           Container(
               margin: EdgeInsets.fromLTRB(0, 10, 0, 5),
               padding: EdgeInsets.all(0),
@@ -81,7 +81,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     height: 25,
   );
 
-  bool _isOnlyReadGrid(int index) => _state.sudoku.puzzle[index] != -1;
+  bool _isOnlyReadGrid(int index) => _state.sudoku?.puzzle[index] != -1;
 
   // 触发游戏结束
   void _gameOver() {
@@ -89,10 +89,10 @@ class _SudokuGamePageState extends State<SudokuGamePage>
     String title, conclusion;
     if (isWinner) {
       title = "God Job!";
-      conclusion = "恭喜你完成 [${LEVEL_NAMES[_state.level]}] 数独挑战";
+      conclusion = "congratulations [${LEVEL_NAMES[_state.level]}] Sudoku Challenge";
     } else {
       title = "Failure";
-      conclusion = "很遗憾,本轮 [${LEVEL_NAMES[_state.level]}] 数独错误次数太多，挑战失败!";
+      conclusion = "Unfortunately, this round [${LEVEL_NAMES[_state.level]}] Too many Sudoku mistakes, the challenge fails!";
     }
 
     Navigator.of(context)
@@ -124,7 +124,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                                     style: TextStyle(fontSize: 15)),
                                 Container(
                                     margin: EdgeInsets.fromLTRB(0, 15, 0, 10),
-                                    child: Text("用时  ${_state.timer}'s",
+                                    child: Text("time cost  ${_state.timer}'s",
                                         style: TextStyle(color: Colors.blue))),
                                 Container(
                                     padding: EdgeInsets.all(10),
@@ -194,17 +194,17 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                 // 填写数字
                 _state.switchRecord(_chooseSudokuBox, num);
                 // 判断真伪
-                if (_state.record[_chooseSudokuBox] != -1 &&
-                    _state.sudoku.answer[_chooseSudokuBox] != num) {
+                if (_state.record?[_chooseSudokuBox] != -1 &&
+                    _state.sudoku?.answer[_chooseSudokuBox] != num) {
                   // 填入错误数字
                   _state.lifeLoss();
-                  if (_state.life <= 0) {
+                  if (_state.life! <= 0) {
                     // 游戏结束
                     return _gameOver();
                   }
                   showDialog(
                       context: context,
-                      builder: (_) => AlertDialog(content: Text("输入错误")));
+                      builder: (_) => AlertDialog(content: Text("input error")));
 
                   return;
                 }
@@ -309,18 +309,18 @@ class _SudokuGamePageState extends State<SudokuGamePage>
           context: context,
           builder: (context) {
             return AlertDialog(
-                title: Text("退出游戏"),
-                content: Text("是否要结束本轮数独？"),
+                title: Text("exit the game"),
+                content: Text("Do you want to end this round of Sudoku?"),
                 actions: [
                   FlatButton(
-                      child: Text("退出游戏"),
+                      child: Text("exit the game"),
                       onPressed: () {
                         // dismiss with confirm true
                         Navigator.pop(context, true);
                       }),
                   FlatButton(
                     color: Colors.blue,
-                    child: Text("取消"),
+                    child: Text("Cancel"),
                     onPressed: () {
                       // dismiss with cancel
                       Navigator.pop(context, false);
@@ -358,7 +358,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                   child: CupertinoButton(
                       padding: EdgeInsets.all(5),
                       onPressed: tipsOnPressed,
-                      child: Text("提示", style: TextStyle(fontSize: 15))))),
+                      child: Text("hint", style: TextStyle(fontSize: 15))))),
           // 笔记
           Expanded(
               flex: 1,
@@ -367,7 +367,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                   child: CupertinoButton(
                       padding: EdgeInsets.all(5),
                       onPressed: markOnPressed,
-                      child: Text("${_markOpen ? '关闭' : '启用'}笔记",
+                      child: Text("${_markOpen ? 'closure' : 'Enable '} Notes",
                           style: TextStyle(fontSize: 15))))),
           // 退出
           Expanded(
@@ -377,13 +377,13 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                   child: CupertinoButton(
                       padding: EdgeInsets.all(5),
                       onPressed: exitGameOnPressed,
-                      child: Text("退出游戏", style: TextStyle(fontSize: 15)))))
+                      child: Text("exit the game", style: TextStyle(fontSize: 15)))))
         ]));
   }
 
   Widget _willPopWidget(
-      BuildContext context, Widget child, Function onWillPop) {
-    return new WillPopScope(child: child, onWillPop: onWillPop);
+      BuildContext context, Widget child, WillPopCallback onWillPop) {
+    return WillPopScope(child: child, onWillPop: onWillPop);
   }
 
   /// 计算网格背景色
@@ -420,11 +420,11 @@ class _SudokuGamePageState extends State<SudokuGamePage>
   /// 正常网格控件
   ///
   Widget _gridInWellWidget(
-      BuildContext context, int index, int num, Function onTap) {
-    Sudoku sudoku = _state.sudoku;
+      BuildContext context, int index, int num, GestureTapCallback onTap) {
+    Sudoku sudoku = _state.sudoku!;
     List<int> puzzle = sudoku.puzzle;
     List<int> answer = sudoku.answer;
-    List<int> record = _state.record;
+    List<int> record = _state.record!;
     bool readOnly = true;
     bool isWrong = false;
     int num = puzzle[index];
@@ -466,7 +466,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
   ///
   /// 笔记网格控件
   ///
-  Widget _markGridWidget(BuildContext context, int index, Function onTap) {
+  Widget _markGridWidget(BuildContext context, int index, GestureTapCallback onTap) {
     Widget markGrid = InkWell(
         highlightColor: Colors.blue,
         customBorder: Border.all(color: Colors.blue),
@@ -485,7 +485,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                     crossAxisCount: 3),
                 itemBuilder: (BuildContext context, int _index) {
                   String markNum =
-                      '${_state.mark[index][_index + 1] ? _index + 1 : ""}';
+                      '${_state.mark![index]![_index + 1] ? _index + 1 : ""}';
                   return Text(markNum,
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -552,8 +552,8 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                   SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 9),
               itemBuilder: ((BuildContext context, int index) {
                 int num = -1;
-                if (_state.sudoku?.puzzle?.length == 81) {
-                  num = _state.sudoku.puzzle[index];
+                if (_state.sudoku?.puzzle.length == 81) {
+                  num = _state.sudoku!.puzzle[index];
                 }
 
                 wellOnTap() {
@@ -569,9 +569,9 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                 }
 
                 // 用户做标记
-                bool isUserMark = _state.sudoku.puzzle[index] == -1 &&
-                    _state.mark[index] != null &&
-                    _state.mark[index].isNotEmpty;
+                bool isUserMark = _state.sudoku!.puzzle[index] == -1 &&
+                    _state.mark![index] != null &&
+                    _state.mark![index]!.isNotEmpty;
 
                 if (isUserMark) {
                   return _markGridWidget(context, index, wellOnTap);
@@ -604,7 +604,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
 
   @override
   void initState() {
-    log.d("on init state and _puzzle : ${_state.sudoku.puzzle}");
+    log.d("on init state and _puzzle : ${_state.sudoku?.puzzle}");
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _gaming();
@@ -641,7 +641,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
   }
 
   // 定时器
-  Timer _timer;
+  Timer? _timer;
 
   void _gaming() {
     if (_state.status == SudokuGameStatus.pause) {
@@ -678,8 +678,8 @@ class _SudokuGamePageState extends State<SudokuGamePage>
   // 暂停计时
   void _pauseTimer() {
     if (_timer != null) {
-      if (_timer.isActive) {
-        _timer.cancel();
+      if (_timer!.isActive) {
+        _timer!.cancel();
       }
     }
     _timer = null;

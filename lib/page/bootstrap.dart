@@ -3,7 +3,6 @@ import 'dart:isolate';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -13,9 +12,9 @@ import 'package:sudoku_dart/sudoku_dart.dart';
 final Logger log = Logger();
 
 class BootstrapPage extends StatefulWidget {
-  BootstrapPage({Key key, this.title}) : super(key: key);
+  BootstrapPage({Key? key, this.title}) : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   _BootstrapPageState createState() => _BootstrapPageState();
@@ -37,7 +36,7 @@ Widget _scanButton(BuildContext context) {
           context,
           (content) => CupertinoButton(
                 color: Colors.blue,
-                child: Text("扫独解题"),
+                child: Text("Quét một mình để giải quyết vấn đề"),
                 onPressed: () {
                   log.d("scan");
                 },
@@ -56,7 +55,7 @@ Widget _continueGameButton(BuildContext context) {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Container(
-                      child: Text("继续游戏",
+                      child: Text("Tiếp tục trò chơi",
                           style: TextStyle(
                               color: Colors.blue,
                               fontWeight: FontWeight.bold))),
@@ -79,7 +78,7 @@ void _internalSudokuGenerate(List<dynamic> args) {
 
   Sudoku sudoku = Sudoku.generator(level);
   List<int> puzzle = sudoku.puzzle;
-  log.d("数独生成完毕");
+  log.d("Sudoku được tạo ra");
   log.d(puzzle);
   sendPort.send(sudoku);
 }
@@ -96,7 +95,7 @@ Future _sudokuGenerate(BuildContext context, LEVEL level) async {
                   CircularProgressIndicator(),
                   Container(
                       margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                      child: Text("正在为你加载数独,请稍后"))
+                      child: Text("Đang tải Sudoku cho bạn, vui lòng đợi"))
                 ])));
       });
 
@@ -123,7 +122,7 @@ Widget _newGameButton(BuildContext context) {
       (_) => CupertinoButton(
           color: Colors.blue,
           child: Text(
-            "新游戏",
+            "trò chơi mới",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           onPressed: () {
@@ -134,7 +133,7 @@ Widget _newGameButton(BuildContext context) {
                     margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
                     child: CupertinoButton(
 //                      color: Colors.red,
-                      child: Text("取消"),
+                      child: Text("Hủy bỏ"),
                       onPressed: () {
                         Navigator.of(context).pop(false);
                       },
@@ -154,19 +153,7 @@ Widget _newGameButton(BuildContext context) {
                           levelName,
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        onPressed: () async {
-                          log.d("begin generator Sudoku with level : $level");
-                          await _sudokuGenerate(context, level);
-                          Navigator.popAndPushNamed(context, "/gaming");
-
-                          return Container(
-                              color: Colors.white,
-                              alignment: Alignment.center,
-                              child: Center(
-                                  child: Text('Sudoku loading...',
-                                      style: TextStyle(color: Colors.black),
-                                      textDirection: TextDirection.ltr)));
-                        },
+                        onPressed: () => _onPressed(context, level),
                       )));
 
               buttons.add(button);
@@ -230,4 +217,18 @@ class _BootstrapPageState extends State<BootstrapPage> {
     return ScopedModelDescendant<SudokuState>(
         builder: (context, child, model) => Scaffold(body: body));
   }
+}
+
+Future<Widget> _onPressed(BuildContext context, LEVEL level) async {
+  log.d("begin generator Sudoku with level : $level");
+  await _sudokuGenerate(context, level);
+  Navigator.popAndPushNamed(context, "/gaming");
+
+  return Container(
+      color: Colors.white,
+      alignment: Alignment.center,
+      child: Center(
+          child: Text('Sudoku loading...',
+              style: TextStyle(color: Colors.black),
+              textDirection: TextDirection.ltr)));
 }
