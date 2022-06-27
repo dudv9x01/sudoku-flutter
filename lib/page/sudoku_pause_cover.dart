@@ -17,14 +17,14 @@ class _SudokuPauseCoverPageState extends State<SudokuPauseCoverPage> {
     TextStyle pageTextStyle = TextStyle(color: Colors.white);
 
     Widget titleView =
-        Align(child: Text("游戏暂停", style: TextStyle(fontSize: 22)));
+        Align(child: Text("game paused", style: TextStyle(fontSize: 22)));
     Widget bodyView = Align(
         child: Column(children: [
       Expanded(flex: 3, child: titleView),
-      Expanded(flex: 5, child: Column(children: [Text("难度 [${LEVEL_NAMES[_state.level]}] 已用时 ${_state.timer}")])),
+      Expanded(flex: 5, child: Column(children: [Text("difficulty [${LEVEL_NAMES[_state.level]}] elapsed time ${_state.timer}")])),
       Expanded(
         flex: 1,
-        child: Align(alignment: Alignment.center, child: Text("双击屏幕继续游戏")),
+        child: Align(alignment: Alignment.center, child: Text("Double tap the screen to continue the game")),
       )
     ]));
 

@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:isolate';
+// import 'dart:isolate';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -72,16 +72,17 @@ Widget _continueGameButton(BuildContext context) {
   });
 }
 
-void _internalSudokuGenerate(List<dynamic> args) {
-  LEVEL level = args[0];
-  SendPort sendPort = args[1];
+// void _internalSudokuGenerate(List<dynamic> args) {
+//   LEVEL level = args[0];
+//   SendPort sendPort = args[1];
 
-  Sudoku sudoku = Sudoku.generator(level);
-  List<int> puzzle = sudoku.puzzle;
-  log.d("Sudoku được tạo ra");
-  log.d(puzzle);
-  sendPort.send(sudoku);
-}
+//   Sudoku sudoku = Sudoku.generator(level);
+//   List<int> puzzle = sudoku.puzzle;
+//   log.d("Sudoku được tạo ra");
+//   log.d(puzzle);
+//   sendPort.send(sudoku);
+// }
+
 
 Future _sudokuGenerate(BuildContext context, LEVEL level) async {
   showDialog(
@@ -99,17 +100,18 @@ Future _sudokuGenerate(BuildContext context, LEVEL level) async {
                 ])));
       });
 
-  ReceivePort receivePort = ReceivePort();
+  // ReceivePort receivePort = ReceivePort();
 
-  Isolate isolate = await Isolate.spawn(
-      _internalSudokuGenerate, [level, receivePort.sendPort]);
-  var data = await receivePort.first;
-  Sudoku sudoku = data;
+  // Isolate isolate = await Isolate.spawn(
+  //     _internalSudokuGenerate, [level, receivePort.sendPort]);
+  // var data = await receivePort.first;
+  Sudoku sudoku = Sudoku.generator(level);
+  // Sudoku sudoku = data;
   SudokuState state = ScopedModel.of<SudokuState>(context);
   state.initialize(sudoku: sudoku, level: level);
   state.updateStatus(SudokuGameStatus.pause);
-  receivePort.close();
-  isolate.kill(priority: Isolate.immediate);
+  // receivePort.close();
+  // isolate.kill(priority: Isolate.immediate);
   log.d("receivePort.listen done!");
 
   // dismiss dialog

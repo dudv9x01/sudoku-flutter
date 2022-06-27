@@ -349,7 +349,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                   child: CupertinoButton(
                       padding: EdgeInsets.all(5),
                       onPressed: pauseOnPressed,
-                      child: Text("暂停", style: TextStyle(fontSize: 15))))),
+                      child: Text("pause", style: TextStyle(fontSize: 15))))),
           // 提示
           Expanded(
               flex: 1,
@@ -508,7 +508,7 @@ class _SudokuGamePageState extends State<SudokuGamePage>
                   style: TextStyle(color: Colors.black),
                   textDirection: TextDirection.ltr)));
     }
-    return Center(
+    return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
